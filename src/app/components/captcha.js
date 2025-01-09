@@ -57,11 +57,18 @@ const CaptchaSequence = () => {
         if (response.ok) {
           setOutput((prev) => [...prev, `${i}. Forbidden`]);
         } else if (response.status === 403) {
+          console.warn("403 Forbidden: Showing CAPTCHA");
           setIsCaptchaVisible(true);
           setIsSequenceRunning(false);
           break;
+        } else if (response.status === 405) {
+          console.warn("405 Method Not Allowed: Showing CAPTCHA");
+          setIsCaptchaVisible(true);
+          window.showMyCaptcha && window.showMyCaptcha();
+          setIsSequenceRunning(false);
+          break;
         } else {
-          throw new Error("Unexpected response");
+          throw new Error(`Unexpected response status: ${response.status}`);
         }
       } catch (error) {
         console.error(`Error at step ${i}:`, error);
@@ -82,6 +89,7 @@ const CaptchaSequence = () => {
 
   return (
     <div>
+      {/* Formulaire d'entrée */}
       {!isCaptchaVisible && !isSequenceRunning && (
         <form onSubmit={handleFormSubmit}>
           <label>
@@ -92,6 +100,7 @@ const CaptchaSequence = () => {
         </form>
       )}
 
+      {/* CAPTCHA */}
       {isCaptchaVisible && (
         <div id="my-captcha-container">
           <button onClick={() => window.showMyCaptcha()}>
@@ -100,6 +109,7 @@ const CaptchaSequence = () => {
         </div>
       )}
 
+      {/* Résultats */}
       <div>
         <h2>Output:</h2>
         <pre>{output.join("\n")}</pre>

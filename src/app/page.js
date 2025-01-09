@@ -1,5 +1,9 @@
+import CaptchaSequence from "./components/captcha";
+
 export default function Home() {
   return (
-    <div>hello</div>
+    <div>
+      <CaptchaSequence/>
+    </div>
   );
 }
